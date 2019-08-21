@@ -1,0 +1,8 @@
+<pre>
+欢迎使用本系统，系统架构：
+    ## 前端
+    - Webpack
+    - Admin-lte(基于bootstrap)
+    - jQuery
+    - SME-Router 第三方路由
+</pre>
