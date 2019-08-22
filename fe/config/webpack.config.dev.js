@@ -21,10 +21,19 @@ module.exports = {
 
     //loader
     module: {
-        rules: [ {
-            test: /\.art$/,
-            loader: "art-template-loader"   //加载  .art 文件
-        }]
+        rules: [
+            {
+                test: /\.art$/,
+                loader: 'art-template-loader'   //加载  .art 文件
+            },
+            {
+                test: /\.(scss|css)$/,
+                loader: ['style-loader', 'css-loader', 'sass-loader']   
+                // css-loader负责将css编译成模块放入js中， 
+                // style-loader负责将js处理出来放在界面上 包含将样式处理成.css文件放入页面
+                // sass-loader编译scss文件
+            }
+        ]
     },
 
     // 插件

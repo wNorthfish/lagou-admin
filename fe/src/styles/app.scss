@@ -1,0 +1,15 @@
+#user-menu{
+    height: 50px;
+    .dropdown-toggle{
+        display: flex;
+        padding: 0 5px;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        #btn-signin,#btn-signup{
+            height: 100%;
+            padding: 0 8px;
+            line-height: 50px;
+        }
+    }
+}
