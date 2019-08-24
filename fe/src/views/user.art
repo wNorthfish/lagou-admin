@@ -8,7 +8,7 @@
     <!-- The user image in the navbar-->
     <img src="/public/images/user2-160x160.jpg" class="user-image" alt="User Image">
     <!-- hidden-xs hides the username on small devices so only the image appears. -->
-    <span class="hidden-xs"> 你好，xxx</span>
+    <span class="hidden-xs"> 你好，{{username}}</span>
     {{/if}}
 </a>
 <ul class="dropdown-menu">
@@ -44,7 +44,7 @@
         <img src="/public/images/user2-160x160.jpg" class="img-circle" alt="User Image">
 
         <p>
-            欢迎您：Alexander Pierce - Web Developer
+            欢迎您：{{username}}
             <small>Member since Nov. 2012</small>
         </p>
     </li>

@@ -16,7 +16,12 @@ module.exports = {
     // 做webpack-dev-server的配置
     devServer: {
         contentBase: path.resolve(__dirname, '../dev'),
-        port: 8000
+        port: 8000,
+        proxy: {                     // 代理 devServer.proxy使用了非常强大的http-proxy-middleware包
+            '/api': {
+              target: 'http://localhost:3000'
+            }
+        }
     },
 
     //loader

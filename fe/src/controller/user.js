@@ -7,9 +7,11 @@
 // })
 
 
-let _url = ''
 
 import userView from '../views/user.art'
+
+let _url = ''
+let _type = ''
 
 export default {
     render(){
@@ -31,16 +33,17 @@ export default {
         // let html = template.render(userView(), {  // 可直接用userView({ isSignin:false })
         //     isSignin: true
         // })
-        let html = userView({
+        let html = userView({      
             isSignin : false
         })
         $('.user-menu').html(html)
         this.bindEventToBtn()
     },
 
-    bindEventToBtn(){
-        $('.hidden-xs').on('click', function(){
-            _url = $(this).attr('id') === 'btn-signin' ? '/api/signin' : '/api/signup'
+    bindEventToBtn(){    
+        $('.hidden-xs').on('click', function(){    // 给登录 与 注册按钮绑定事件 点击来确定访问的 _url
+            _type = $(this).attr('id')
+            _url = _type === 'btn-signin' ? '/api/users/signin' : '/api/users/signup'
             // if($(this).attr('id') === "btn-signin"){
             //     console.log('btn-signin')
             // } else {
@@ -48,16 +51,38 @@ export default {
             // }
         })
 
-        $('#btn-submit').on('click',()=>{
+        $('#btn-submit').on('click',()=>{    // 点击确认 ajax请求  指定的_url  收到返回结果
             let data = $('#user-form').serialize()
             $.ajax({
                 url: _url,
                 type:'POST',
                 data,
                 success(result){
-                    console.log(result)
+                    if(_type === 'btn-signin'){
+                        // 登录
+                        if(result.ret){
+                            // 登录成功
+                            let html = userView({      
+                                isSignin : true,
+                                username : result.data.username
+                            })
+                            $('.user-menu').html(html)
+                        } else {
+                            alert('用户名或密码错误')
+                        }
+                    } else {
+                        if(result.ret){
+                            // 注册成功
+                        } else {
+                            alert('用户名已被注册')
+                        }
+                    }
                 }
             })
-        })
+
+            // 七天免登录
+
+            $('#user-form input').val('')   // 点击确认后即清空表单内数据
+        }) 
     }
 }
