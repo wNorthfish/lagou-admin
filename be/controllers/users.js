@@ -96,6 +96,7 @@ module.exports = {
                     username
                 })
             })
+            next()
         } else {
             res.render('fail', {
                 data: JSON.stringify({
