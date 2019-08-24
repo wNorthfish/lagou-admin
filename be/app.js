@@ -9,9 +9,17 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
+var cookieSession = require('cookie-session');     // 引入cookie-session
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+app.use(cookieSession({                             // app.use 则在 req 对象中就有req.session对象
+  name: 'session',
+  keys: ['key1', 'key2'],
+  maxAge: 24 * 60 * 60 * 1000      // 过期日期
+}));
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -20,7 +28,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/api/users', usersRouter);
+app.use('/api/users', usersRouter);     // 更改 /api/users
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -4,7 +4,7 @@ const tools = require('../utils/tools')
 
 
 module.exports = {
-    // 注册逻辑
+    // 注册逻辑接口
     async signup(req, res, next){
         // 给前端返回注册状态信息 ====  接口    但希望返回json字符串
         res.set('content-type', 'application/json;charset=utf-8')
@@ -49,7 +49,7 @@ module.exports = {
 
     },
 
-    // 登录逻辑
+    // 登录逻辑接口
     async signin(req, res, next){
         // 给前端返回注册状态信息 ====  接口    但希望返回json字符串
         res.set('content-type', 'application/json;charset=utf-8')
@@ -59,6 +59,7 @@ module.exports = {
         let result = await userModel.findOne(username)   // 先从数据库里搜索是否有此用户
         if(result){  // 用户存在  比对密码  到bcrypt 中设置密码比对
             if(await tools.compare(password, result.password)) {
+                req.session.username = username
                 res.render('succ',{
                     data: JSON.stringify({
                         msg: '用户登录成功+++',
@@ -81,5 +82,38 @@ module.exports = {
         }
 
         
-    }
+    },
+
+    // 接口：判断用用户是否登录 是否有权限
+    async isSignin(req, res, next){
+        // 给前端返回注册状态信息 ====  接口    但希望返回json字符串
+        res.set('content-type', 'application/json;charset=utf-8')
+        let username = req.session.username
+        if(username){
+            res.render('succ', {
+                data: JSON.stringify({
+                    msg: '用户有权限+++',
+                    username
+                })
+            })
+        } else {
+            res.render('fail', {
+                data: JSON.stringify({
+                    msg: '用户无权限---'
+                })
+            })
+        }
+    },
+
+    // 登出逻辑 接口
+    async signout(req, res, next){    // 登出 则删除session再刷新页面
+        // 给前端返回注册状态信息 ====  接口    但希望返回json字符串
+        res.set('content-type', 'application/json;charset=utf-8')
+        req.session = null
+        res.render('succ', {
+            data: JSON.stringify({
+                msg: '用户登出成功.'
+            })
+        })
+    } 
 }

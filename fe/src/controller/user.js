@@ -12,9 +12,10 @@ import userView from '../views/user.art'
 
 let _url = ''
 let _type = ''
+// let _isSignin = false    // 处理鉴权
 
 export default {
-    render(){
+    async render(){
         // $('.user-menu').html(html)   此法不可用，因为user-menu中的模板是存在可变性的，登录与未登录显示不一样
         // 有想 使用userView()  路由请求res.render()  来渲染， 在index.js 中设置第二套路由    
         
@@ -33,15 +34,30 @@ export default {
         // let html = template.render(userView(), {  // 可直接用userView({ isSignin:false })
         //     isSignin: true
         // })
+
+        let result = await this.isSignin()
+        
         let html = userView({      
-            isSignin : false
+            isSignin : result.ret,
+            username : result.data.username
         })
         $('.user-menu').html(html)
         this.bindEventToBtn()
     },
 
+    // 鉴权模块
+    isSignin(){               
+        return $.ajax({
+            url: '/api/users/isSignin',
+            success(result){
+                return result
+            }
+        })
+    },
+
+    // 给登录 与 注册按钮绑定事件 点击来确定访问的 _url
     bindEventToBtn(){    
-        $('.hidden-xs').on('click', function(){    // 给登录 与 注册按钮绑定事件 点击来确定访问的 _url
+        $('#user-menu .hidden-xs').on('click', function(){    
             _type = $(this).attr('id')
             _url = _type === 'btn-signin' ? '/api/users/signin' : '/api/users/signup'
             // if($(this).attr('id') === "btn-signin"){
@@ -51,38 +67,78 @@ export default {
             // }
         })
 
-        $('#btn-submit').on('click',()=>{    // 点击确认 ajax请求  指定的_url  收到返回结果
+        $('#btn-submit').on('click', ()=>{    // 点击确认 ajax请求  指定的_url  收到返回结果
             let data = $('#user-form').serialize()
             $.ajax({
                 url: _url,
                 type:'POST',
                 data,
-                success(result){
-                    if(_type === 'btn-signin'){
-                        // 登录
-                        if(result.ret){
-                            // 登录成功
-                            let html = userView({      
-                                isSignin : true,
-                                username : result.data.username
-                            })
-                            $('.user-menu').html(html)
-                        } else {
-                            alert('用户名或密码错误')
-                        }
-                    } else {
-                        if(result.ret){
-                            // 注册成功
-                        } else {
-                            alert('用户名已被注册')
-                        }
-                    }
-                }
+                // success(result){
+                //     if(_type === 'btn-signin'){
+                //         // 登录
+                //         if(result.ret){
+                //             // 登录成功
+                //             let html = userView({      
+                //                 isSignin : true,
+                //                 username : result.data.username
+                //             })
+                //             $('.user-menu').html(html)
+                //         } else {
+                //             alert('用户名或密码错误')
+                //         }
+                //     } else {
+                //         if(result.ret){
+                //             // 注册成功
+                //         } else {
+                //             alert('用户名已被注册')
+                //         }
+                //     }
+                // }
+                success: this.bindEventSucc.bind(this),
+                error: this.bindEventErr.bind(this)
             })
 
             // 七天免登录
 
             $('#user-form input').val('')   // 点击确认后即清空表单内数据
         }) 
+
+        $('#user-menu').on('click', '#btn-signout', ()=>{
+            console.log('out')
+            $.ajax({
+                url: '/api/users/signout',
+                success: this.bindEventSucc.bind(this),
+                error: this.bindEventErr.bind(this)
+            })
+        })
+
+
+    },
+
+    bindEventSucc(result){
+        if(_type === 'btn-signup'){
+            alert(result.data.msg)
+        } else if(_type === 'btn-signin'){
+            if(result.ret){  // 登录
+                // 登录成功
+                let html = userView({      
+                    isSignin : true,
+                    username : result.data.username
+                })
+                $('.user-menu').html(html)
+                _type = ''
+            } else {
+                alert(result.data.msg)
+            }
+        } else {
+            location.reload()
+        }
+    },
+
+    bindEventErr(){
+
     }
+
+
+    
 }
