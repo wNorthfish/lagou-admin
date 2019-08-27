@@ -1,34 +1,113 @@
 import positionListView from '../views/position-list.art'
 import positionAddView from '../views/position-add.art'
 import positionEditView from '../views/position-edit.art'
+import _ from 'lodash'
+
+function remove(id, res){
+    $.ajax({
+        url: '/api/position/delete',
+        type: 'DELETE',
+        data:{
+            id
+        },
+        success(result){
+            if(result.ret){
+                res.go('/position?_=' + new Date().getTime())
+            }
+        }
+    })
+}
+
+function loadData(pageNo, res){
+    let start = pageNo * COUNT
+    $.ajax({
+        url: '/api/position/list',
+        data:{
+            start,
+            count: COUNT
+        },
+        success(result){
+            if(result.ret){
+                res.render(positionListView({
+                    ...result.data,
+                    pageNo,
+                    showPage:true,
+                    pageCount: _.range(result.data.total / COUNT)
+                }))
+            } else {
+                res.go('/home')
+                alert('您好，请先登录！')
+            }
+        }
+    })
+
+}
+
+const COUNT = 5
 
 export default {
     render(req, res){
-        $.ajax({
-            url: '/api/position/list',
-            success(result){
-                if(result.ret){
-                    res.render(positionListView({
-                        list: result.data
-                    }))
 
-                    // 添加按钮绑定事件  路由跳转问题
-                    $('#addbtn').on('click',()=>{
-                        res.go('/position_add')
-                    })
-                    // 修改按钮绑定事件  路由跳转
-                    $('.btn-update').on('click',function(){
-                        res.go('/position_edit', {
-                            id: $(this).attr('data-id')
-                        })
-                    })
-                } else {
-                    res.go('/')
-                    alert('您好，请先登录！')
-                }
+        loadData(0, res)
+
+         // 添加按钮绑定事件  路由跳转问题
+         $('#router-view').on('click','#addbtn',()=>{
+            res.go('/position_add')
+        })
+        // 修改按钮绑定事件  路由跳转
+        $('#router-view').on('click','.btn-update',function(){
+            res.go('/position_edit', {
+                id: $(this).attr('data-id')
+            })
+        })
+        // 删除按钮绑定事件   请求删除
+        $('#router-view').on('click','.btn-delete', function(){
+            remove(~~$(this).attr('data-id'),res)
+        })
+        // 分页按钮绑定事件   点击LodaData换页
+        $('#router-view').on('click','#page li[data-index]', function(){
+            console.log($(this).attr('data-index'))
+            loadData($(this).attr('data-index'),res)
+        })
+        // 上翻页点击事件
+        $('#router-view').on('click','#prev', function(){
+            let currIndex = $('#page li[class="active"]').attr('data-index')
+            let index = currIndex - 1
+            if(index > -1){
+                console.log(index)
+                loadData(index, res)
+            }
+        })
+        // 下翻页点击事件
+        $('#router-view').on('click','#next', function(){
+            let currIndex = $('#page li[class="active"]').attr('data-index')
+            let index = ~~currIndex + 1
+            let pagecount = ~~$(this).attr('data-pagecount')
+            if(index < pagecount){
+                console.log(index)
+                loadData(index, res)
             }
         })
 
+        // 搜索
+        $('#router-view').on('click','#possearch', function(){
+            let keywords = $('#keywords').val()
+            $.ajax({
+                url: '/api/position/search',
+                type: 'POST',
+                data: {
+                    keywords
+                },
+                success(result){
+                    if(result.ret){
+                        res.render(positionListView({
+                            ...result.data,
+                            showPage:false
+                        }))
+                    }
+                }
+            })
+        })
     },
 
     add(req, res){
@@ -89,5 +168,7 @@ export default {
         })
 
     }
+
+    
 
 }

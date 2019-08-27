@@ -52,13 +52,17 @@
     </table>
   </div>
   <!-- /.box-body -->
+  {{if total > 0 && showPage}}
   <div class="box-footer clearfix">
-    <ul class="pagination pagination-sm no-margin pull-right">
-      <li><a href="#">&laquo;</a></li>
-      <li><a href="#">1</a></li>
-      <li><a href="#">2</a></li>
-      <li><a href="#">3</a></li>
-      <li><a href="#">&raquo;</a></li>
+    <ul id="page" class="pagination pagination-sm no-margin pull-right">
+      <li id="prev"><a href="javascript: void(0)">&laquo;</a></li>
+      {{each pageCount}}
+      <li data-index="{{$index}}" class="{{if pageNo == $index}}active{{/if}}">
+        <a href="javascript: void(0)">{{$value+1}}</a>
+      </li>
+      {{/each}}
+      <li id="next" data-pagecount="{{pageCount.length}}"><a href="javascript: void(0)">&raquo;</a></li>
     </ul>
   </div>
+  {{/if}}
 </div>

@@ -29,12 +29,12 @@ router.use(activeNavUtil)
 // router.route('/', (req, res, next) => {   //路由
 //     res.render('hello im home')           //直接render首页模板  使用art-template或ejs   views下创建.atr文件
 // })
-router.route('/', homeController.render)   // 同上
+router.route('/home', homeController.render)   // 同上
 router.route('/position', positionController.render)
 router.route('/position_add', positionController.add)  // 添加职位路由
 router.route('/position_edit',positionController.edit) // 添加职位修改路由
 
-router.redirect('/position')   // 设置路由重定向  默认路由 (用户登录后默认进入首页)
+router.redirect('/home')   // 设置路由重定向  默认路由 (用户登录后默认进入首页)
 
 
 

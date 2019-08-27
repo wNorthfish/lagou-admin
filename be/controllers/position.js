@@ -4,10 +4,13 @@ const moment = require('moment')
 
 module.exports = {
     async list(req, res, next) {
-        let result = await posModel.find()
-        if(result){
+        let {list, total} = await posModel.find(req.query)
+        if(await list){
             res.render('succ', {
-                data: JSON.stringify(result)
+                data: JSON.stringify({
+                    list: await list,
+                    total: await total
+                })
             })
         }
     },
@@ -52,6 +55,28 @@ module.exports = {
                 })
             })
         }
+    },
+
+    async delete(req, res, next){
+        let result = await posModel.delete(req.body.id)
+        if(result){
+            res.render('succ', {
+                data: JSON.stringify({
+                    msg: '数据删除成功'
+                })
+            })
+        }
+    },
+
+    async search(req, res, next){
+        let {keywords} = req.body
+        let list = await posModel.search(keywords)
+        res.render('succ', {
+            data: JSON.stringify({
+                list,
+                total: -1
+            })
+        })
     }
 
 
