@@ -1,6 +1,7 @@
 const mongoose = require('../utils/db')
 
 const Position = mongoose.model('positions', {
+    companyLogo: String,
     companyName: String,
     positionName: String,
     city: String,

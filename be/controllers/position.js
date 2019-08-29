@@ -19,6 +19,7 @@ module.exports = {
     async save(req, res, next){
         let result = await posModel.save({
             ...req.body,
+            companyLogo: req.filename,
             createTime: moment().format('YYYY-MM-DD h:mm:ss a')
         })
         if(result){

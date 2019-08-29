@@ -62,7 +62,7 @@ export default {
         })
         // 删除按钮绑定事件   请求删除
         $('#router-view').on('click','.btn-delete', function(){
-            remove(~~$(this).attr('data-id'),res)
+            remove($(this).attr('data-id'),res)
         })
         // 分页按钮绑定事件   点击LodaData换页
         $('#router-view').on('click','#page li[data-index]', function(){
@@ -115,21 +115,35 @@ export default {
         $('#posback').on('click', ()=>{ // 点击返回
             res.back()
         })
+        
         $('#possubmit').on('click',()=>{
-            let data = $('#possave').serialize()
-            $.ajax({
+            $('#possave').ajaxSubmit({
                 url: '/api/position/save',
                 type: 'POST',
-                data,
+                clearForm: true,
                 success(result){
-                    if(result){
+                    if(result.ret){
                         res.back()
                     } else {
-                        alert(result.data.msg)
+                        // alert(result.data.msg)
                     }
                 }
                 
             })
+            // let data = $('#possave').serialize()
+            // $.ajax({
+            //     url: '/api/position/save',
+            //     type: 'POST',
+            //     data,
+            //     success(result){
+            //         if(result){
+            //             res.back()
+            //         } else {
+            //             alert(result.data.msg)
+            //         }
+            //     }
+                
+            // })
         })
     },
 
